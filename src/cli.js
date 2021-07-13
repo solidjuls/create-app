@@ -1,6 +1,5 @@
 import arg from "arg";
 import inquirer from "inquirer";
-import { projectInstall } from "pkg-install";
 import { createProject } from "./main";
 
 function parseArgumentsIntoOptions(rawArgs) {
