@@ -3,10 +3,12 @@ import fs from "fs";
 import ncp from "ncp";
 import path from "path";
 import { promisify } from "util";
-import { projectInstall } from "pkg-install";
+const { execSync } = require("child_process");
 
 const access = promisify(fs.access);
 const copy = promisify(ncp);
+const DEFAULT_TARGET_DIRECTORY =
+  "/Users/juli.arnalot/Desktop/projects/create-cli/newProject";
 
 async function copyTemplateFiles(options) {
   return copy(options.templateDirectory, options.targetDirectory, {
@@ -14,34 +16,42 @@ async function copyTemplateFiles(options) {
   });
 }
 
+function getTemplateDirectory(template) {
+  const currentFileUrl = import.meta.url;
+  return path.resolve(
+    new URL(currentFileUrl).pathname,
+    "../../templates",
+    template
+  );
+}
+
 export async function createProject(options) {
   options = {
     ...options,
-    targetDirectory: options.targetDirectory || '/Users/juli.arnalot/Desktop/projects/create-cli/newProject',
+    targetDirectory: options.targetDirectory || DEFAULT_TARGET_DIRECTORY,
   };
-  const currentFileUrl = import.meta.url;
-  const templateDir = path.resolve(
-    new URL(currentFileUrl).pathname,
-    "../../templates",
+
+  options.templateDirectory = getTemplateDirectory(
     options.template.toLowerCase()
   );
-  options.templateDirectory = templateDir;
 
   try {
-    console.log("templateDir", templateDir);
-    await access(templateDir, fs.constants.R_OK);
+    await access(options.templateDirectory, fs.constants.R_OK);
   } catch (err) {
     console.error("%s Invalid template name", err);
     process.exit(1);
   }
 
-  console.log("Copy project files");
   await copyTemplateFiles(options);
 
-  const { stdout } = await projectInstall({
+  const res = execSync("yarn", {
     cwd: options.targetDirectory,
   });
-  console.log(stdout);
+  console.log(res.toString("utf-8").trim());
+  // const { stdout } = await projectInstall({
+  //   cwd: options.targetDirectory,
+  // });
+  // console.log(stdout);
 
   console.log("%s Project ready", chalk.green.bold("DONE"));
   return true;
