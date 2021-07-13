@@ -1,0 +1,4 @@
+type: nodejs-app
+image: quay.dc.xing.com/red/oly-training-juli
+os_release: xenial
+start_cmd: /app/app.js

@@ -1,0 +1,52 @@
+version: "3.3"
+services:
+  rabbit:
+    image: rabbitmq:3.8.3-management
+    ports:
+      - '5671:5671'
+      - '5672:5672'
+      - '15672:15672'
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      timeout: 20s
+      retries: 10
+  redis:
+    image: quay.dc.xing.com/xingbox/redis
+    ports:
+      - '6379:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', '-h', '0.0.0.0', 'ping']
+      timeout: 20s
+      retries: 10
+  memcached:
+    image: quay.dc.xing.com/xingbox/memcached
+    command: /usr/bin/memcached -u memcache -v -l 0.0.0.0
+    ports:
+      - '11211:11211'
+  beetle_proxy:
+    image: quay.dc.xing.com/red/beetle-proxy:0.0.18
+    command: ['shell', './docker/app/entrypoint.sh']
+    hostname: 'beetle_proxy.ams1.com'
+    ports:
+      - '16123:16123'
+    environment:
+      DATACENTER_IP_WHITELIST: '0.0.0.0'
+      ADMIN_IP_WHITELIST: '0.0.0.0'
+      REDIS_HOST: redis
+      BEETLE_SERVERS: 'rabbit:5672'
+      BEETLE_REDIS_SERVER: 'redis:6379'
+      MEMCACHE_HOST: 'memcached:11211'
+      LOGJAM_APP_NAME: 'teampermissions'
+      RAILS_ENV: production
+      BEETLE_PROXY_MESSAGE_PORT: '16123'
+      BEETLE_PROXY_QUEUE_HOST: 'host.docker.internal'
+      BEETLE_PROXY_QUEUE_PREFIX: teampermissions
+      BEETLE_PROXY_CONFIG_PATH: '/config/amqp.yml'
+    volumes:
+      - ./amqp.yml:/config/amqp.yml
+    depends_on:
+      - rabbit
+      - redis
+      - memcached
+
+    

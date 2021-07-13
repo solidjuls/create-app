@@ -1,0 +1,40 @@
+wiring:
+  exchanges:
+    teampermissions:
+      config:
+        redundant: true
+        persistent: true
+        ttl: 1.day
+      messages:
+        teampermissions_companies_user_updated:
+          key: 'teampermissions.companies.user.updated'
+          redundant: true
+        teampermissions_pages_user_updated:
+          key: 'teampermissions.pages.user.updated'
+          redundant: true
+        teampermissions_new_message_added:
+          key: 'companies.second.updated'
+          redundant: true
+    corporate_pages:
+      queues:
+        teampermissions_new_queue_added:
+          key: 'companies.second.updated'
+          redundant: true
+        teampermissions_companies_editor_updated:
+          key: 'companies.editor.updated'
+        teampermissions_companies_pages_editor_updated:
+          key: 'companies.editor.updated'
+      handler:
+        config:
+          exceptions: 3
+          delay: 10.minutes
+          timeout: 1.hour
+    groups_api:
+      queues:
+        teampermissions_groups_api_membership_deleted:
+          key: 'groups_api.membership.deleted'
+      handler:
+        config:
+          exceptions: 3
+          delay: 10.minutes
+          timeout: 1.hour

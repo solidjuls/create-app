@@ -1,0 +1,12 @@
+version: '2.1'
+services:
+  main:
+    image: quay.dc.xing.com/red/oly-training-juli:$TAG
+    command: sh -c 'curl server:3000'
+    environment:
+      BEETLE_PROXY_DISABLED: 'true'
+  server:
+    image: quay.dc.xing.com/red/oly-training-juli:$TAG
+    command: sh -c 'curl localhost:3000'
+  links:
+    - server
