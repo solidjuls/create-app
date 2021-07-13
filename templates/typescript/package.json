@@ -1,0 +1,10 @@
+{
+  "name": "hello-world-express",
+  "description": "Hello World test app",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "react": "^16.14.0",
+    "react-apollo": "^3.1.5"
+  }
+}

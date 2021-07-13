@@ -1,5 +1,6 @@
 import arg from 'arg';
 import inquirer from 'inquirer';
+import { projectInstall } from 'pkg-install';
 import { createProject } from './main';
 
 function parseArgumentsIntoOptions(rawArgs) {
@@ -60,10 +61,9 @@ async function promptForMissingOptions(options) {
       git: options.git || answers.git,
     };
 }
-
-   
+  
 export async function cli(args) {
-    let options = parseArgumentsIntoOptions(args);
-    options = promptForMissingOptions(options);
+  let options = parseArgumentsIntoOptions(args);
+  options = await promptForMissingOptions(options);
     await createProject(options)
 }
